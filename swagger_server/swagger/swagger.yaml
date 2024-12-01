@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: S02 - Responder Encuestas
+  description: API para gestionar las respuestas de los usuarios a encuestas y formularios.
+  version: 1.0.0
+servers:
+- url: http://localhost:5001
+  description: Servidor local para desarrollo
+tags:
+- name: Responses
+  description: Operaciones relacionadas con las respuestas de los usuarios.
+paths:
+  /responses:
+    post:
+      tags:
+      - Responses
+      summary: Enviar respuestas a una encuesta
+      description: Permite a los usuarios enviar sus respuestas a una encuesta específica.
+      operationId: responses_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseSubmission'
+        required: true
+      responses:
+        "201":
+          description: Respuestas guardadas correctamente.
+        "400":
+          description: Datos enviados no válidos.
+        "404":
+          description: Encuesta no encontrada.
+      x-openapi-router-controller: swagger_server.controllers.responses_controller
+  /responses/{id}:
+    get:
+      tags:
+      - Responses
+      summary: Obtener detalles de una respuesta
+      description: Permite consultar una respuesta enviada anteriormente.
+      operationId: responses_id_get
+      parameters:
+      - name: id
+        in: path
+        description: ID de la respuesta
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Detalles de la respuesta enviada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDetail'
+        "404":
+          description: Respuesta no encontrada.
+      x-openapi-router-controller: swagger_server.controllers.responses_controller
+components:
+  schemas:
+    ResponseSubmission:
+      type: object
+      properties:
+        survey_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 123
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseSubmission_answers'
+    ResponseDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        survey_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 123
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseSubmission_answers'
+      example:
+        survey_id: 1
+        user_id: 123
+        answers:
+        - answer: Muy satisfecho
+          question_id: 101
+        - answer: Muy satisfecho
+          question_id: 101
+        id: 1001
+    ResponseSubmission_answers:
+      type: object
+      properties:
+        question_id:
+          type: integer
+          example: 101
+        answer:
+          type: string
+          example: Muy satisfecho
+      example:
+        answer: Muy satisfecho
+        question_id: 101
+
